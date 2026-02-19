@@ -1,4 +1,4 @@
-import { onWalletChange, sendTransactions } from '../miniapp-sdk.js';
+import { onWalletChange, sendTransactions, onAppData } from '../miniapp-sdk.js';
 
 const statusEl = document.getElementById('status');
 const sendBtn = document.getElementById('sendBtn');
@@ -6,6 +6,17 @@ const resultEl = document.getElementById('result');
 const tokenAddrInput = document.getElementById('tokenAddr');
 const recipientInput = document.getElementById('recipient');
 const amountInput = document.getElementById('amount');
+
+onAppData((data) => {
+  try {
+    const { token, recipient, amount } = JSON.parse(data);
+    if (token) tokenAddrInput.value = token;
+    if (recipient) recipientInput.value = recipient;
+    if (amount) amountInput.value = amount;
+  } catch {
+    // not JSON — ignore
+  }
+});
 
 onWalletChange((address) => {
   if (address) {
