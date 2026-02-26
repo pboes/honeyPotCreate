@@ -1,4 +1,4 @@
-import { onWalletChange, sendTransactions, onAppData } from '../miniapp-sdk.js';
+import { onWalletChange, sendTransactions, onAppData } from '@aboutcircles/miniapp-sdk';
 
 const statusEl = document.getElementById('status');
 const sendBtn = document.getElementById('sendBtn');

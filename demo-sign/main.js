@@ -1,4 +1,4 @@
-import { onWalletChange, signMessage, onAppData } from '../miniapp-sdk.js';
+import { onWalletChange, signMessage, onAppData } from '@aboutcircles/miniapp-sdk';
 
 const statusEl = document.getElementById('status');
 const signBtn = document.getElementById('signBtn');
