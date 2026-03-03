@@ -274,6 +274,47 @@ app.get('/api/registrations', async (_req, res) => {
   }
 });
 
+// ── Debug ──────────────────────────────────────────────────────────────────
+
+app.get('/api/debug', async (_req, res) => {
+  const redisUrl   = process.env.UPSTASH_REDIS_REST_URL;
+  const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const encKey     = process.env.ENCRYPTION_KEY;
+
+  const envCheck = {
+    UPSTASH_REDIS_REST_URL:   redisUrl   ? `✅ set (${redisUrl.slice(0, 30)}...)` : '❌ missing',
+    UPSTASH_REDIS_REST_TOKEN: redisToken ? `✅ set (${redisToken.slice(0, 10)}...)` : '❌ missing',
+    ENCRYPTION_KEY:           encKey     ? `✅ set (${encKey.slice(0, 8)}...)` : '❌ missing',
+    usingRedis: useRedis,
+  };
+
+  let allKeys = [];
+  let allKeysError = null;
+  try {
+    if (useRedis) {
+      allKeys = await redis.keys('*');
+    }
+  } catch (err) {
+    allKeysError = err.message;
+  }
+
+  // Raw REST fetch bypassing the SDK
+  let rawFetch = null;
+  let rawFetchError = null;
+  try {
+    if (redisUrl && redisToken) {
+      const resp = await fetch(`${redisUrl}/get/honeypot%3Aregistration%3Apboes`, {
+        headers: { Authorization: `Bearer ${redisToken}` },
+      });
+      rawFetch = await resp.json();
+    }
+  } catch (err) {
+    rawFetchError = err.message;
+  }
+
+  return res.json({ envCheck, allKeys, allKeysError, rawFetch, rawFetchError });
+});
+
 // ── Start ──────────────────────────────────────────────────────────────────
 
 app.listen(PORT, () => {
