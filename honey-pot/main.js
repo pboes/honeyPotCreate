@@ -6,8 +6,8 @@ import { onWalletChange, sendTransactions } from '@aboutcircles/miniapp-sdk';
 // ── Constants ──────────────────────────────────────────────────────────────
 const REGISTRY_CONTRACT  = '0x12105a9B291aF2ABb0591001155A75949b062CE5';
 const CRC_TOKEN          = '0x548c20e6c24E4876E20daDbEAb75362e2F5A4bC1';
-const REDEMPTION_DOMAIN  = 'https://redeem.example.com'; // TODO: set real domain
-const API_BASE           = 'http://localhost:3001';
+const REDEMPTION_DOMAIN  = 'https://honey-pot-redeem.vercel.app/'; // TODO: set real domain
+const API_BASE           = 'honeypotcreate-production.up.railway.app';
 
 const COMPUTE_ADDRESS_ABI = [
   {
