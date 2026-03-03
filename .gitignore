@@ -2,3 +2,5 @@ node_modules/
 dist/
 .playwright-cli/
 package-lock.json
+.env
+data/registrations.json

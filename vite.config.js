@@ -9,6 +9,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         'demo-sign': resolve(__dirname, 'demo-sign/index.html'),
         'demo-tx': resolve(__dirname, 'demo-tx/index.html'),
+        'honey-pot': resolve(__dirname, 'honey-pot/index.html'),
       },
     },
   },

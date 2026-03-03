@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honey Pot – Create Referral</title>
+    <style>
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            border: 1px solid;
+        }
+        .status.disconnected {
+            background: #fff8eb;
+            border-color: #feebc7;
+            color: #b54708;
+        }
+        .status.connected {
+            background: #f0fdf3;
+            border-color: #bbf7ca;
+            color: #158030;
+        }
+        .status .addr {
+            font-family: 'SF Mono', ui-monospace, monospace;
+            font-size: 12px;
+        }
+    </style>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .steps {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+        .step-dot {
+            flex: 1;
+            height: 4px;
+            border-radius: 999px;
+            background: #ede1d8;
+            transition: background 0.3s;
+        }
+        .step-dot.active {
+            background: #060a40;
+        }
+        .step-dot.done {
+            background: #158030;
+        }
+        .section {
+            display: none;
+        }
+        .section.visible {
+            display: block;
+        }
+        .address-display {
+            font-family: 'SF Mono', ui-monospace, monospace;
+            font-size: 11px;
+            background: #faf5f1;
+            border: 1px solid #ede1d8;
+            border-radius: 8px;
+            padding: 8px 10px;
+            word-break: break-all;
+            color: #060a40;
+            margin-top: 6px;
+        }
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .label-row label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6a6c8c;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+        .badge.ok {
+            background: #f0fdf3;
+            color: #158030;
+            border: 1px solid #bbf7ca;
+        }
+        .badge.warn {
+            background: #fff8eb;
+            color: #b54708;
+            border: 1px solid #feebc7;
+        }
+        .redemption-link-box {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+            margin-top: 8px;
+        }
+        .redemption-link-box code {
+            flex: 1;
+            font-family: 'SF Mono', ui-monospace, monospace;
+            font-size: 11px;
+            background: #faf5f1;
+            border: 1px solid #ede1d8;
+            border-radius: 8px;
+            padding: 8px 10px;
+            word-break: break-all;
+            color: #060a40;
+            display: block;
+        }
+        .copy-btn {
+            width: auto;
+            padding: 0 14px;
+            font-size: 13px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 14px;
+            font-size: 12px;
+            color: #9b9db3;
+            cursor: pointer;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            width: auto;
+        }
+        .back-link:hover {
+            color: #060a40;
+            opacity: 1;
+        }
+        .success-banner {
+            text-align: center;
+            padding: 20px 0 8px;
+        }
+        .success-banner .icon {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .success-banner h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #060a40;
+            margin-bottom: 4px;
+        }
+        .success-banner p {
+            font-size: 13px;
+            color: #6a6c8c;
+        }
+        .divider {
+            height: 1px;
+            background: #ede1d8;
+            margin: 16px 0;
+        }
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+        .meta-row span:first-child {
+            color: #9b9db3;
+        }
+        .meta-row span:last-child {
+            color: #060a40;
+            font-weight: 500;
+            font-family: 'SF Mono', ui-monospace, monospace;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🍯 Honey Pot</h2>
+        <p class="subtitle">Create a referral reward for a new Circles member</p>
+
+        <div class="status disconnected" id="wallet-status">
+            Waiting for wallet connection…
+        </div>
+
+        <div class="steps">
+            <div class="step-dot active" id="dot-1"></div>
+            <div class="step-dot" id="dot-2"></div>
+            <div class="step-dot" id="dot-3"></div>
+        </div>
+
+        <!-- Step 1: Paste referral link -->
+        <div class="section visible" id="step-1">
+            <div class="field">
+                <div class="label-row">
+                    <label>Circles Referral Link</label>
+                    <span class="badge warn" id="link-badge">Unverified</span>
+                </div>
+                <input
+                    type="text"
+                    id="referralLink"
+                    placeholder="https://app.gnosis.io/referral/0x..."
+                    autocomplete="off"
+                    spellcheck="false"
+                />
+            </div>
+
+            <div id="parsed-section" style="display:none">
+                <div class="field">
+                    <label style="font-size:12px;font-weight:500;color:#6a6c8c;text-transform:uppercase;letter-spacing:0.04em;display:block;margin-bottom:5px;">Derived Safe Address</label>
+                    <div class="address-display" id="safeAddress">—</div>
+                </div>
+            </div>
+
+            <div class="result" id="step1-result"></div>
+
+            <button id="parseBtn">Parse Referral Link</button>
+            <button id="nextBtn1" disabled style="margin-top:8px;background:#158030;">Continue →</button>
+        </div>
+
+        <!-- Step 2: GitHub username + CRC amount -->
+        <div class="section" id="step-2">
+            <div class="field">
+                <label>GitHub Username</label>
+                <input
+                    type="text"
+                    id="githubUsername"
+                    placeholder="e.g. octocat"
+                    autocomplete="off"
+                    spellcheck="false"
+                />
+            </div>
+
+            <div class="field">
+                <div class="label-row">
+                    <label>CRC Amount to Send</label>
+                    <span id="crc-balance-badge" style="font-size:11px;color:#6a6c8c;">Balance: —</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:stretch;">
+                    <input
+                        type="number"
+                        id="crcAmount"
+                        placeholder="e.g. 10"
+                        min="0"
+                        step="any"
+                        style="flex:1;"
+                    />
+                    <button id="maxBtn" type="button" disabled style="width:auto;padding:0 14px;font-size:13px;border-radius:10px;flex-shrink:0;background:#6a6c8c;">Max</button>
+                </div>
+            </div>
+
+            <div class="result" id="step2-result"></div>
+
+            <button id="registerBtn">Fund &amp; Register</button>
+            <button class="back-link" id="backBtn1">← Back</button>
+        </div>
+
+        <!-- Step 3: Redemption link -->
+        <div class="section" id="step-3">
+            <div class="success-banner">
+                <span class="icon">✅</span>
+                <h3>Redemption Link Created</h3>
+                <p>Share this link publicly so your invitee can claim their CRC.</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="meta-row">
+                <span>GitHub user</span>
+                <span id="summary-username">—</span>
+            </div>
+            <div class="meta-row">
+                <span>Safe address</span>
+                <span id="summary-safe">—</span>
+            </div>
+            <div class="meta-row">
+                <span>CRC sent</span>
+                <span id="summary-amount">—</span>
+            </div>
+            <div class="meta-row" id="tx-row" style="display:none">
+                <span>Transaction</span>
+                <a id="summary-tx" href="#" target="_blank" style="font-family:'SF Mono',ui-monospace,monospace;font-size:11px;color:#158030;word-break:break-all;">—</a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field">
+                <label style="font-size:12px;font-weight:500;color:#6a6c8c;text-transform:uppercase;letter-spacing:0.04em;display:block;margin-bottom:5px;">Redemption Link</label>
+                <div class="redemption-link-box">
+                    <code id="redemptionLink">—</code>
+                    <button class="copy-btn" id="copyBtn">Copy</button>
+                </div>
+            </div>
+
+            <button class="back-link" id="startOverBtn" style="margin-top:6px;">+ Create another</button>
+        </div>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+</body>
+</html>
